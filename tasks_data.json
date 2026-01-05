@@ -1,9 +1,23 @@
 {
   "tasks": {
-    "urgent_important": [],
+    "urgent_important": [
+      {
+        "id": "20260105193113032608",
+        "text": "kusje aan gisele",
+        "created_at": "2026-01-05 19:31:13"
+      }
+    ],
     "not_urgent_important": [],
     "urgent_not_important": [],
     "not_urgent_not_important": []
   },
-  "completed_tasks": []
+  "completed_tasks": [
+    {
+      "id": "20260105193055833672",
+      "text": "chocomelk maken",
+      "created_at": "2026-01-05 19:30:55",
+      "completed_at": "2026-01-05 19:31:25",
+      "category": "urgent_important"
+    }
+  ]
 }
