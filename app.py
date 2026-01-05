@@ -1,230 +1,210 @@
 import streamlit as st
 import json
+import os
 from datetime import datetime
 from pathlib import Path
 
 # Configuration
-
-DATA_FILE = Path("tasks_data.json")
+DATA_FILE = "tasks_data.json"
 
 # Initialize session state
-
-if 'tasks' not in st.session_state:
-st.session_state.tasks = {
-'urgent_important': [],
-'not_urgent_important': [],
-'urgent_not_important': [],
-'not_urgent_not_important': []
-}
-st.session_state.completed_tasks = []
+if "tasks" not in st.session_state:
+    st.session_state.tasks = {
+        "urgent_important": [],
+        "not_urgent_important": [],
+        "urgent_not_important": [],
+        "not_urgent_not_important": []
+    }
+    st.session_state.completed_tasks = []
 
 # Load tasks from file
-
 def load_tasks():
-if DATA_FILE.exists():
-try:
-with open(DATA_FILE, 'r') as f:
-data = json.load(f)
-st.session_state.tasks = data.get('tasks', st.session_state.tasks)
-st.session_state.completed_tasks = data.get('completed_tasks', [])
-except Exception as e:
-st.error(f"Error loading tasks: {e}")
+    if os.path.exists(DATA_FILE):
+        try:
+            with open(DATA_FILE, "r") as f:
+                data = json.load(f)
+                st.session_state.tasks = data.get("tasks", st.session_state.tasks)
+                st.session_state.completed_tasks = data.get("completed_tasks", [])
+        except Exception as e:
+            st.error(f"Error loading tasks: {e}")
 
 # Save tasks to file
-
 def save_tasks():
-try:
-data = {
-'tasks': st.session_state.tasks,
-'completed_tasks': st.session_state.completed_tasks
-}
-with open(DATA_FILE, 'w') as f:
-json.dump(data, f, indent=2)
-except Exception as e:
-st.error(f"Error saving tasks: {e}")
+    try:
+        data = {
+            "tasks": st.session_state.tasks,
+            "completed_tasks": st.session_state.completed_tasks
+        }
+        with open(DATA_FILE, "w") as f:
+            json.dump(data, f, indent=2)
+    except Exception as e:
+        st.error(f"Error saving tasks: {e}")
 
 # Add task
-
 def add_task(category, task_text):
-if task_text.strip():
-task = {
-'text': task_text,
-'created': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-'id': datetime.now().timestamp()
-}
-st.session_state.tasks[category].append(task)
-save_tasks()
+    if task_text.strip():
+        task = {
+            "id": datetime.now().strftime("%Y%m%d%H%M%S%f"),
+            "text": task_text.strip(),
+            "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        st.session_state.tasks[category].append(task)
+        save_tasks()
+        return True
+    return False
 
 # Complete task
-
 def complete_task(category, task_id):
-tasks = st.session_state.tasks[category]
-task = next((t for t in tasks if t['id'] == task_id), None)
-if task:
-task['completed'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-task['category'] = category
-st.session_state.completed_tasks.append(task)
-st.session_state.tasks[category] = [t for t in tasks if t['id'] != task_id]
-save_tasks()
+    task_list = st.session_state.tasks[category]
+    task_to_complete = None
+    
+    for i, task in enumerate(task_list):
+        if task["id"] == task_id:
+            task_to_complete = task_list.pop(i)
+            break
+    
+    if task_to_complete:
+        task_to_complete["completed_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        task_to_complete["category"] = category
+        st.session_state.completed_tasks.append(task_to_complete)
+        save_tasks()
 
 # Delete task
-
 def delete_task(category, task_id):
-st.session_state.tasks[category] = [
-t for t in st.session_state.tasks[category] if t['id'] != task_id
-]
-save_tasks()
+    task_list = st.session_state.tasks[category]
+    st.session_state.tasks[category] = [t for t in task_list if t["id"] != task_id]
+    save_tasks()
 
 # Load tasks on startup
-
 load_tasks()
 
-# App layout
+# Page configuration
+st.set_page_config(
+    page_title="Eisenhower Matrix Task Manager",
+    page_icon="📋",
+    layout="wide"
+)
 
-st.title("Eisenhower Matrix Task Manager")
-st.markdown("*Organize tasks by urgency and importance*")
+# Title
+st.title("📋 Eisenhower Matrix Task Manager")
+st.markdown("---")
 
-# Create two columns for the matrix
-
-col1, col2 = st.columns(2)
-
-# Quadrant 1: Urgent & Important
-
-with col1:
-st.markdown("### 🔴 DO FIRST")
-st.caption("Urgent & Important")
-
-```
-new_task = st.text_input("Add task:", key="urgent_important_input")
-if st.button("Add", key="urgent_important_add"):
-    add_task('urgent_important', new_task)
-    st.rerun()
-
-tasks = st.session_state.tasks['urgent_important']
-if tasks:
-    for task in tasks:
-        col_a, col_b = st.columns([4, 1])
-        with col_a:
-            st.markdown(f"- {task['text']}")
-            st.caption(f"Added: {task['created']}")
-        with col_b:
-            if st.button("✓", key=f"complete_urgent_important_{task['id']}"):
-                complete_task('urgent_important', task['id'])
-                st.rerun()
-            if st.button("🗑️", key=f"delete_urgent_important_{task['id']}"):
-                delete_task('urgent_important', task['id'])
-                st.rerun()
-else:
-    st.info("No tasks yet")
-```
-
-# Quadrant 2: Not Urgent & Important
-
-with col2:
-st.markdown("### 🟡 SCHEDULE")
-st.caption("Not Urgent & Important")
-
-```
-new_task = st.text_input("Add task:", key="not_urgent_important_input")
-if st.button("Add", key="not_urgent_important_add"):
-    add_task('not_urgent_important', new_task)
-    st.rerun()
-
-tasks = st.session_state.tasks['not_urgent_important']
-if tasks:
-    for task in tasks:
-        col_a, col_b = st.columns([4, 1])
-        with col_a:
-            st.markdown(f"- {task['text']}")
-            st.caption(f"Added: {task['created']}")
-        with col_b:
-            if st.button("✓", key=f"complete_not_urgent_important_{task['id']}"):
-                complete_task('not_urgent_important', task['id'])
-                st.rerun()
-            if st.button("🗑️", key=f"delete_not_urgent_important_{task['id']}"):
-                delete_task('not_urgent_important', task['id'])
-                st.rerun()
-else:
-    st.info("No tasks yet")
-```
-
-st.divider()
-
-# Quadrant 3: Urgent & Not Important
-
-col3, col4 = st.columns(2)
-
-with col3:
-st.markdown("### 🟠 DELEGATE")
-st.caption("Urgent & Not Important")
-
-```
-new_task = st.text_input("Add task:", key="urgent_not_important_input")
-if st.button("Add", key="urgent_not_important_add"):
-    add_task('urgent_not_important', new_task)
-    st.rerun()
-
-tasks = st.session_state.tasks['urgent_not_important']
-if tasks:
-    for task in tasks:
-        col_a, col_b = st.columns([4, 1])
-        with col_a:
-            st.markdown(f"- {task['text']}")
-            st.caption(f"Added: {task['created']}")
-        with col_b:
-            if st.button("✓", key=f"complete_urgent_not_important_{task['id']}"):
-                complete_task('urgent_not_important', task['id'])
-                st.rerun()
-            if st.button("🗑️", key=f"delete_urgent_not_important_{task['id']}"):
-                delete_task('urgent_not_important', task['id'])
-                st.rerun()
-else:
-    st.info("No tasks yet")
-```
-
-# Quadrant 4: Not Urgent & Not Important
-
-with col4:
-st.markdown("### 🟢 ELIMINATE")
-st.caption("Not Urgent & Not Important")
-
-```
-new_task = st.text_input("Add task:", key="not_urgent_not_important_input")
-if st.button("Add", key="not_urgent_not_important_add"):
-    add_task('not_urgent_not_important', new_task)
-    st.rerun()
-
-tasks = st.session_state.tasks['not_urgent_not_important']
-if tasks:
-    for task in tasks:
-        col_a, col_b = st.columns([4, 1])
-        with col_a:
-            st.markdown(f"- {task['text']}")
-            st.caption(f"Added: {task['created']}")
-        with col_b:
-            if st.button("✓", key=f"complete_not_urgent_not_important_{task['id']}"):
-                complete_task('not_urgent_not_important', task['id'])
-                st.rerun()
-            if st.button("🗑️", key=f"delete_not_urgent_not_important_{task['id']}"):
-                delete_task('not_urgent_not_important', task['id'])
-                st.rerun()
-else:
-    st.info("No tasks yet")
-```
-
-# Completed tasks section
-
-st.divider()
-with st.expander(f"📋 Completed Tasks ({len(st.session_state.completed_tasks)})"):
-if st.session_state.completed_tasks:
-for task in reversed(st.session_state.completed_tasks[-20:]):  # Show last 20
-category_labels = {
-'urgent_important': '🔴 DO FIRST',
-'not_urgent_important': '🟡 SCHEDULE',
-'urgent_not_important': '🟠 DELEGATE',
-'not_urgent_not_important': '🟢 ELIMINATE'
+# Category definitions
+categories = {
+    "urgent_important": {
+        "title": "🔥 Urgent & Important",
+        "description": "Do First - Critical tasks that require immediate attention",
+        "color": "#ff4b4b"
+    },
+    "not_urgent_important": {
+        "title": "📅 Not Urgent & Important",
+        "description": "Schedule - Important tasks for long-term success",
+        "color": "#4b7bff"
+    },
+    "urgent_not_important": {
+        "title": "⚡ Urgent & Not Important",
+        "description": "Delegate - Tasks that are urgent but not critical",
+        "color": "#ffa500"
+    },
+    "not_urgent_not_important": {
+        "title": "🗑️ Not Urgent & Not Important",
+        "description": "Eliminate - Tasks with minimal value",
+        "color": "#808080"
+    }
 }
-st.markdown(f"**{task['text']}** - {category_labels.get(task['category'], '')}")
-st.caption(f"Completed: {task['completed']}")
-else:
-st.info("No completed tasks yet")
+
+# Create two rows of two columns
+row1_col1, row1_col2 = st.columns(2)
+row2_col1, row2_col2 = st.columns(2)
+
+columns = [row1_col1, row1_col2, row2_col1, row2_col2]
+category_keys = list(categories.keys())
+
+# Render each quadrant
+for idx, (category_key, category_info) in enumerate(categories.items()):
+    with columns[idx]:
+        st.markdown(f"### {category_info['title']}")
+        st.markdown(f"*{category_info['description']}*")
+        
+        # Add new task
+        with st.form(key=f"form_{category_key}"):
+            new_task = st.text_input(
+                "Add new task",
+                key=f"input_{category_key}",
+                label_visibility="collapsed",
+                placeholder="Enter task description..."
+            )
+            submit = st.form_submit_button("➕ Add Task", use_container_width=True)
+            
+            if submit:
+                if add_task(category_key, new_task):
+                    st.success("Task added!")
+                    st.rerun()
+                else:
+                    st.warning("Please enter a task description")
+        
+        st.markdown("---")
+        
+        # Display tasks
+        tasks = st.session_state.tasks[category_key]
+        
+        if not tasks:
+            st.info("No tasks in this category")
+        else:
+            for task in tasks:
+                col_text, col_complete, col_delete = st.columns([6, 1, 1])
+                
+                with col_text:
+                    st.markdown(f"**{task['text']}**")
+                    st.caption(f"Created: {task['created_at']}")
+                
+                with col_complete:
+                    if st.button("✓", key=f"complete_{task['id']}", help="Complete task"):
+                        complete_task(category_key, task["id"])
+                        st.rerun()
+                
+                with col_delete:
+                    if st.button("🗑️", key=f"delete_{task['id']}", help="Delete task"):
+                        delete_task(category_key, task["id"])
+                        st.rerun()
+                
+                st.markdown("---")
+
+# Sidebar with completed tasks
+with st.sidebar:
+    st.header("📊 Completed Tasks")
+    
+    if st.session_state.completed_tasks:
+        st.success(f"Total completed: {len(st.session_state.completed_tasks)}")
+        
+        if st.button("🗑️ Clear Completed Tasks"):
+            st.session_state.completed_tasks = []
+            save_tasks()
+            st.rerun()
+        
+        st.markdown("---")
+        
+        # Show last 10 completed tasks
+        for task in reversed(st.session_state.completed_tasks[-10:]):
+            category_name = categories[task["category"]]["title"]
+            st.markdown(f"**{task['text']}**")
+            st.caption(f"From: {category_name}")
+            st.caption(f"Completed: {task['completed_at']}")
+            st.markdown("---")
+    else:
+        st.info("No completed tasks yet")
+    
+    st.markdown("---")
+    st.markdown("### About")
+    st.markdown("""
+    The Eisenhower Matrix helps you prioritize tasks by urgency and importance:
+    
+    - **Urgent & Important**: Do immediately
+    - **Not Urgent & Important**: Schedule for later
+    - **Urgent & Not Important**: Delegate if possible
+    - **Not Urgent & Not Important**: Consider eliminating
+    """)
+
+# Footer
+st.markdown("---")
+st.markdown("*Tasks are automatically saved and persist between sessions*")
