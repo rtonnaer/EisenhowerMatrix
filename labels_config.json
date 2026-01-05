@@ -1,0 +1,45 @@
+{
+  "default_labels": [
+    {
+      "name": "work",
+      "color": "#3b82f6"
+    },
+    {
+      "name": "personal",
+      "color": "#8b5cf6"
+    },
+    {
+      "name": "urgent",
+      "color": "#ef4444"
+    },
+    {
+      "name": "health",
+      "color": "#10b981"
+    },
+    {
+      "name": "finance",
+      "color": "#f59e0b"
+    },
+    {
+      "name": "family",
+      "color": "#ec4899"
+    },
+    {
+      "name": "learning",
+      "color": "#06b6d4"
+    },
+    {
+      "name": "hobby",
+      "color": "#a855f7"
+    },
+    {
+      "name": "errands",
+      "color": "#84cc16"
+    },
+    {
+      "name": "meetings",
+      "color": "#6366f1"
+    }
+  ],
+  "auto_generate_colors": true
+}

@@ -2,9 +2,15 @@
   "tasks": {
     "urgent_important": [
       {
-        "id": "20260105193113032608",
-        "text": "kusje aan gisele",
-        "created_at": "2026-01-05 19:31:13"
+        "id": "20260105202350673903",
+        "name": "Test",
+        "description": "",
+        "created_at": "2026-01-05 20:23:50",
+        "due_date": null,
+        "priority": 0,
+        "labels": [
+          "urgent"
+        ]
       }
     ],
     "not_urgent_important": [],
@@ -18,6 +24,94 @@
       "created_at": "2026-01-05 19:30:55",
       "completed_at": "2026-01-05 19:31:25",
       "category": "urgent_important"
+    },
+    {
+      "id": "20260105194636804571",
+      "name": "Op tijd naar bed 2",
+      "description": "Op tijd naar bed gaan zodat ik fit kan worden voor ody",
+      "created_at": "2026-01-05 19:46:36",
+      "completed_at": "2026-01-05 19:50:41",
+      "category": "urgent_important"
+    },
+    {
+      "id": "20260105194616043926",
+      "name": "Op tijd naar bed",
+      "description": "Op tijd naar bed gaan zodat ik fit kan worden voor ody",
+      "created_at": "2026-01-05 19:46:16",
+      "completed_at": "2026-01-05 19:51:08",
+      "category": "urgent_important"
+    },
+    {
+      "id": "20260105194630044821",
+      "name": "Op tijd naar bed",
+      "description": "Op tijd naar bed gaan zodat ik fit kan worden voor ody",
+      "created_at": "2026-01-05 19:46:30",
+      "completed_at": "2026-01-05 19:51:09",
+      "category": "urgent_important"
+    },
+    {
+      "id": "20260105194636555110",
+      "name": "Op tijd naar bed 2",
+      "description": "Op tijd naar bed gaan zodat ik fit kan worden voor ody",
+      "created_at": "2026-01-05 19:46:36",
+      "completed_at": "2026-01-05 19:51:10",
+      "category": "urgent_important"
+    },
+    {
+      "id": "20260105195037714168",
+      "name": "Test Taak 3",
+      "description": "daarom",
+      "created_at": "2026-01-05 19:50:37",
+      "completed_at": "2026-01-05 19:51:11",
+      "category": "urgent_important"
+    },
+    {
+      "id": "20260105195755567147",
+      "name": "This is a first task",
+      "description": "With a description. Edit the description",
+      "created_at": "2026-01-05 19:57:55",
+      "completed_at": "2026-01-05 19:58:24",
+      "category": "not_urgent_not_important"
+    },
+    {
+      "id": "20260105201324857738",
+      "name": "Dit is een Taak 2",
+      "description": "Met en update",
+      "created_at": "2026-01-05 20:13:24",
+      "due_date": null,
+      "priority": 1,
+      "labels": [
+        "learning",
+        "finance"
+      ],
+      "completed_at": "2026-01-05 20:15:34",
+      "category": "urgent_important"
+    },
+    {
+      "id": "20260105201947096628",
+      "name": "Efteling",
+      "description": "Plan een bezoek naar de Efteling",
+      "created_at": "2026-01-05 20:19:47",
+      "due_date": "2026-01-15",
+      "priority": 0,
+      "labels": [
+        "family",
+        "urgent"
+      ],
+      "completed_at": "2026-01-05 20:20:27",
+      "category": "not_urgent_not_important"
     }
-  ]
+  ],
+  "label_colors": {
+    "work": "#3b82f6",
+    "personal": "#8b5cf6",
+    "urgent": "#ef4444",
+    "health": "#10b981",
+    "finance": "#f59e0b",
+    "family": "#ec4899",
+    "learning": "#06b6d4",
+    "hobby": "#a855f7",
+    "errands": "#84cc16",
+    "meetings": "#6366f1"
+  }
 }
