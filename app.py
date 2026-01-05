@@ -5,7 +5,7 @@ from pathlib import Path
 
 # Configuration
 
-DATA_FILE = Path(“tasks_data.json”)
+DATA_FILE = Path("tasks_data.json")
 
 # Initialize session state
 
